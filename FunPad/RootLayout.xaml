@@ -1,0 +1,250 @@
+﻿<Grid 
+    x:Name="theGrid"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"   
+    xmlns:local="clr-namespace:FunPad"
+    xmlns:res="clr-namespace:FunPad;assembly=FunPad.XamlResource"
+    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+    xmlns:shell="clr-namespace:Microsoft.Windows.Shell;assembly=Microsoft.Windows.Shell, Version=3.0.50506.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
+    xmlns:extToolkit="clr-namespace:Microsoft.Windows.Controls;assembly=WPFToolkit.Extended, Version=1.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4"
+    >
+
+    <Grid.Resources>
+        <ContextMenu  x:Name="editorContextMenu" x:Key="editorContextMenu">
+
+            <MenuItem Command="{x:Static res:FunPadCommands.ResetSessionCommand}">
+                <MenuItem.Icon>
+                    <Border>
+                        <Image Style="{DynamicResource DisabledMenuItemImageStyle}" Source="/Resources/Images/Reset Session.png" Stretch="Uniform"/>
+                    </Border>
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator/>
+            <MenuItem Command="Cut">
+                <MenuItem.Icon>
+                    <Border>
+                        <Image Style="{DynamicResource DisabledMenuItemImageStyle}" Source="/Resources/Images/Cut.png" Stretch="Uniform"/>
+                    </Border>
+                </MenuItem.Icon>
+            </MenuItem>
+
+            <MenuItem Command="Copy">
+                <MenuItem.Icon>
+                    <Border>
+                        <Image Style="{DynamicResource DisabledMenuItemImageStyle}" Source="/Resources/Images/Copy.png" Stretch="Uniform"/>
+                    </Border>
+                </MenuItem.Icon>
+            </MenuItem>
+
+            <MenuItem Command="Paste">
+                <MenuItem.Icon>
+                    <Border>
+                        <Image Style="{DynamicResource DisabledMenuItemImageStyle}" Source="/Resources/Images/Paste.png" Stretch="Uniform"/>
+                    </Border>
+                </MenuItem.Icon>
+            </MenuItem>
+            
+            <Separator/>
+            
+            <MenuItem Command="Undo">
+                <MenuItem.Icon>
+                    <Border>
+                        <Image Style="{DynamicResource DisabledMenuItemImageStyle}" Source="/Resources/Images/Undo.png" Stretch="Uniform"/>
+                    </Border>
+                </MenuItem.Icon>
+            </MenuItem>
+
+            <MenuItem Command="Redo">
+                <MenuItem.Icon>
+                    <Border>
+                        <Image Style="{DynamicResource DisabledMenuItemImageStyle}" Source="/Resources/Images/Redo.png" Stretch="Uniform"/>
+                    </Border>
+                </MenuItem.Icon>
+            </MenuItem>
+            
+            <Separator/>
+            
+            <MenuItem Command="{x:Static res:FunPadCommands.ClearAllCommand}">
+                <MenuItem.Icon>
+                    <Border>
+                        <Image Style="{DynamicResource DisabledMenuItemImageStyle}" Source="/Resources/Images/Clear All.png" Stretch="Uniform"/>
+                    </Border>
+                </MenuItem.Icon>
+            </MenuItem>
+
+            <MenuItem Command="{x:Static res:FunPadCommands.ClearHistoryCommand}">
+                <MenuItem.Icon>
+                    <Border>
+                        <Image Style="{DynamicResource DisabledMenuItemImageStyle}" Source="/Resources/Images/Clear History.png" Stretch="Uniform"/>
+                    </Border>
+                </MenuItem.Icon>
+            </MenuItem>
+
+            <Separator/>
+
+            <MenuItem Command="{x:Static res:FunPadCommands.OptionsCommand}">
+                <MenuItem.Icon>
+                    <Border>
+                        <Image Height="18" Width="18" Style="{DynamicResource DisabledMenuItemImageStyle}" Source="/Resources/Images/Options.png" Stretch="Uniform"/>
+                    </Border>
+                </MenuItem.Icon>
+            </MenuItem>
+            
+        </ContextMenu>
+    </Grid.Resources>
+
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock Style="{StaticResource AppTitleStyle}">F# Interactive Pad</TextBlock>
+    </StackPanel>
+
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button  Style="{StaticResource MinimizeCaptionButtonStyle}" 
+                 Command ="{Binding Source={x:Static shell:SystemCommands.MinimizeWindowCommand}}" 
+                 shell:WindowChrome.IsHitTestVisibleInChrome="true"
+                 ToolTip="Minimize"
+                 Width="35" Height="25" />
+        <Button  Style="{StaticResource MaximizeCaptionButtonStyle}"  
+                 Command ="{Binding Source={x:Static shell:SystemCommands.MaximizeWindowCommand}}" 
+                 CommandParameter="{Binding ElementName=theGrid, Path=DataContext.WindowState}"
+                 ToolTip="{Binding ElementName=theGrid, Path=DataContext.WindowState, Converter={StaticResource WindowStateToCaptionTooltipConverter}}"
+                 shell:WindowChrome.IsHitTestVisibleInChrome="true"
+                 res:CaptionButtonExtendedProperty.OwnerWindowState="{Binding ElementName=theGrid, Path=DataContext.WindowState}"  
+                 Width="35" Height="25"/>
+        <Button  Style="{StaticResource CloseCaptionButtonStyle}"  
+                 Command ="{Binding Source={x:Static shell:SystemCommands.CloseWindowCommand}}" 
+                 shell:WindowChrome.IsHitTestVisibleInChrome="true"
+                 ToolTip="Close"
+                 Width="35" Height="25" />
+    </StackPanel>
+
+    <ToolBar Grid.Row="1" Style="{StaticResource FunPadToolbarStyle}"  >
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}"                 
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static res:FunPadCommands.LoadScriptFileCommand}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}"  Source="/Resources/Images/Load Script File.png" Stretch="Uniform"/>
+        </Button>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}" 
+                CommandTarget="{Binding ElementName=theGrid, Path=DataContext.Editor, Mode=OneTime}"
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static ApplicationCommands.Save}">
+            <Image  Style="{StaticResource DisabledButtonImageStyle}"  Source="/Resources/Images/InteractiveSave.png" Stretch="Uniform"/>
+        </Button>
+        <Separator/>
+        <Button Style="{StaticResource ToolbarButtonStyle}" 
+                Command="{Binding}" 
+                CommandTarget="{Binding ElementName=theGrid, Path=DataContext.Editor, Mode=OneTime}"
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static ApplicationCommands.Cut}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}" Source="/Resources/Images/Cut.png" Stretch="Uniform"/>
+        </Button>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}" 
+                CommandTarget="{Binding ElementName=theGrid, Path=DataContext.Editor, Mode=OneTime}"
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static ApplicationCommands.Copy}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}"  Source="/Resources/Images/Copy.png" Stretch="Uniform"/>
+        </Button>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}" 
+                CommandTarget="{Binding ElementName=theGrid, Path=DataContext.Editor, Mode=OneTime}"
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static ApplicationCommands.Paste}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}"  Source="/Resources/Images/Paste.png" Stretch="Uniform"/>
+        </Button>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}" 
+                CommandTarget="{Binding ElementName=theGrid, Path=DataContext.Editor, Mode=OneTime}"
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static ApplicationCommands.Delete}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}"  Source="/Resources/Images/Delete.png" Stretch="Uniform"/>
+        </Button>
+        <Separator/>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}"
+                CommandTarget="{Binding ElementName=theGrid, Path=DataContext.Editor, Mode=OneTime}"
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static ApplicationCommands.Undo}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}" Source="/Resources/Images/Undo.png" Stretch="Uniform"/>
+        </Button>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}"
+                CommandTarget="{Binding ElementName=theGrid, Path=DataContext.Editor, Mode=OneTime}"
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static ApplicationCommands.Redo}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}"  Source="/Resources/Images/Redo.png" Stretch="Uniform"/>
+        </Button>
+        <Separator/>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}"                
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static res:FunPadCommands.ClearAllCommand}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}"  Source="/Resources/Images/Clear All.png" Stretch="Uniform"/>
+        </Button>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}"                
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static res:FunPadCommands.ClearHistoryCommand}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}"  Source="/Resources/Images/Clear History.png" Stretch="Uniform"/>
+        </Button>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}"                
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static res:FunPadCommands.ResetSessionCommand}">
+            <Image Style="{StaticResource DisabledButtonImageStyle}"  Source="/Resources/Images/Reset Session.png" Stretch="Uniform"/>
+        </Button>
+        <Separator/>
+        <Button Style="{StaticResource ToolbarButtonStyle}"
+                Command="{Binding}"                
+                ToolTipService.ShowOnDisabled="True"
+                ToolTip="{Binding Converter={StaticResource CommandToTooltipTextConverter}}"
+                DataContext="{x:Static res:FunPadCommands.OptionsCommand}">
+            <Image Height="18" Width="18" Source="/Resources/Images/Options.png" Stretch="Uniform"/>
+        </Button>
+
+    </ToolBar>
+
+    <extToolkit:SplitButton Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Background="Transparent"
+                                Command="{x:Static ApplicationCommands.Help}"
+                                CommandParameter="http://funpad.codeplex.com">
+        <Image Source="/Resources/Images/help.png" Stretch="Uniform" Margin="0"  />
+        <extToolkit:SplitButton.DropDownContent>
+            <StackPanel Orientation="Vertical" Background="#FCFCFC" Width="120">
+                <Button Style="{StaticResource HelpButtonStyle}" 
+                        Command="{x:Static ApplicationCommands.Help}"
+                        CommandParameter="http://research.microsoft.com/en-us/um/cambridge/projects/fsharp/manual/spec.html">F# Language Spec</Button>
+                <Button Style="{StaticResource HelpButtonStyle}"
+                        Command="{x:Static ApplicationCommands.Help}"
+                        CommandParameter="http://msdn.microsoft.com/en-us/library/dd233181.aspx">F# MSDN Reference</Button>
+                <Button Style="{StaticResource HelpButtonStyle}"
+                        Command="{x:Static ApplicationCommands.Help}"
+                        CommandParameter="http://msdn.microsoft.com/en-us/library/dd233175.aspx">Fsi MSDN Reference</Button>
+            </StackPanel>
+        </extToolkit:SplitButton.DropDownContent>
+    </extToolkit:SplitButton>
+
+    <Border Grid.Row="2" Margin="0,10,0,0" x:Name="editorContainer" CornerRadius="2" BorderThickness="1" BorderBrush="#44587C"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+
+
+</Grid>
+
